@@ -1,26 +1,32 @@
 package config;
 
+import common.enums.ErrorStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ApiResponse<T> {
 
-    private enum Status {
-        SUCCESS, FAIL, ERROR
-    }
-
-    private final Status status;
-    private final T data;
     private final String message;
+    private final Integer statusCode;
+    private final T data;
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(Status.SUCCESS, data, "요청이 성공적으로 처리되었습니다");
+
+    public static <T> ApiResponse<T> createSuccess(String message,Integer statusCode,T data) {
+
+        return new ApiResponse<>(message,statusCode,data);
+
+    }
+    public static <T> ApiResponse<T> createError(String message,Integer statusCode) {
+        return new ApiResponse<>(message,statusCode,null);
     }
 
+    public static <T> ApiResponse<T> onSuccess(T result) {
+        return new ApiResponse<>("Ok", 200, result);
+    }
 
-    public static ApiResponse<?> error(String message) {
-        return new ApiResponse<>(Status.FAIL, "", message);
+    public static ApiResponse<String> onFailure(ErrorStatus errorStatus) {
+        return new ApiResponse<>(errorStatus.getMessage(), errorStatus.getStatusCode(), null);
     }
 }

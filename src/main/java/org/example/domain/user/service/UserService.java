@@ -24,7 +24,7 @@ public class UserService {
     @Transactional
     public void deletedUser(AuthUser authUser, DeleteUserRequestDto deleteUserRequestDto) {
         // authUser 닉네임으로 현재 로그인한 User 찾기
-        User user = userRepository.findByNickname(authUser.getNickname())
+        User user = userRepository.findByUsername(authUser.getNickname())
                 .orElseThrow(()-> new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_USER));
 
         // 회원의 비밀번호가 일치하는지 확인

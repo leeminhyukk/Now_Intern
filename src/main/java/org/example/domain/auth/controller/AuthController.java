@@ -1,8 +1,8 @@
 package org.example.domain.auth.controller;
 
-import org.example.domain.auth.dto.request.SigninRequest;
+import org.example.domain.auth.dto.request.LoginRequest;
 import org.example.domain.auth.dto.request.SignupRequest;
-import org.example.domain.auth.dto.response.SigninResponse;
+import org.example.domain.auth.dto.response.LoginResponse;
 import org.example.domain.auth.dto.response.SignupResponse;
 import org.example.domain.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -24,8 +24,8 @@ public class AuthController {
     }
 
     // 로그인
-    @PostMapping("/signin")
-    public SigninResponse signin(@Valid @RequestBody SigninRequest signinRequest) {
-        return authService.signin(signinRequest);
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 }

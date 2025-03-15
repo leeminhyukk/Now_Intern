@@ -3,9 +3,6 @@ package org.example.domain.auth.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.domain.user.enums.UserRole;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

@@ -1,22 +1,25 @@
 package org.example.config;
 
-import org.example.common.dto.ApiResponse;
-import org.example.common.exception.ApiException;
-import org.example.common.enums.ErrorStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.example.common.dto.ApiResponse;
+import org.example.common.dto.ErrorDetail;
+import org.example.common.exception.ApiException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiResponse<String>> handleApiException(ApiException ex) {
-        // 예외에서 ErrorStatus를 가져와 ReasonDto 생성
-        ErrorStatus errorStatus = ex.getErrorCode();
-        // ApiResponse에 ReasonDto를 넣어서 반환
-        ApiResponse<String> apiResponse = ApiResponse.onFailure(errorStatus);
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST); // 상태코드는 400 (BAD_REQUEST) 예시
+    public ResponseEntity<ApiResponse<ErrorDetail>> handleApiException(ApiException ex) {
+        // ApiException에서 errorCode를 가져와 ErrorDetail로 변환
+        ErrorDetail errorDetail = new ErrorDetail(ex.getErrorCode().getErrorCode(), ex.getErrorCode().getMessage());
+
+        // ApiResponse를 error 정보만 포함하도록 설정
+        ApiResponse<ErrorDetail> apiResponse = ApiResponse.createError(errorDetail);
+
+        // BAD_REQUEST 상태 코드로 응답 반환
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -18,6 +18,7 @@ public enum ErrorStatus {
     _NOT_FOUND_TOKEN("NOT_FOUND_TOKEN", "JWT 토큰이 필요합니다."),
 
     //Auth,USer관련 코드
+    _USER_ALREADY_EXISTS("USER_ALREADY_EXISTS","이미 가입된 사용자입니다."),
     _USERNAME_IS_SAME("USERNAME_IS_SAME", "변경하려는 이름이 전과 동일합니다"),
     _DELETED_USER("DELETED_USER", "탈퇴한 계정입니다."),
     _PASSWORD_NOT_MATCHES("PASSWORD_NOT_MATCHES", "비밀번호가 틀렸습니다."),

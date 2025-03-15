@@ -33,6 +33,11 @@ public class AuthService {
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
 
+        //닉네임 중복 확인
+        if (userRepository.existsByNickname(signupRequest.getNickname())){
+            throw new ApiException(ErrorStatus._USER_ALREADY_EXISTS);
+        }
+
         // 비밀번호 형식 유효성 검사
         if (!isValidPassword(signupRequest.getPassword())) {
             throw new ApiException(ErrorStatus._INVALID_PASSWORD_FORM);
@@ -71,7 +76,7 @@ public class AuthService {
         User user = userRepository.findByNickname(signinRequest.getNickname()).orElseThrow(
                 () -> new ApiException(ErrorStatus._BAD_REQUEST_NOT_FOUND_USER));
 
-        // 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 401을 반환합니다.
+        // 로그인 시 비밀번호가 일치하지 않을 경우 401을 반환합니다.
         if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorStatus._PASSWORD_NOT_MATCHES);
         }

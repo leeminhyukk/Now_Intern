@@ -4,6 +4,7 @@ import org.example.common.enums.ErrorStatus;
 import org.example.common.exception.ApiException;
 import org.example.config.AuthUser;
 import org.example.domain.user.dto.request.DeleteUserRequestDto;
+import org.example.domain.user.dto.response.UpdateUserAuthorityDto;
 import org.example.domain.user.entity.User;
 import org.example.domain.user.enums.UserRole;
 import org.example.domain.user.repository.UserRepository;
@@ -44,7 +45,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserAuthority(Long userId, AuthUser authUser) {
+    public UpdateUserAuthorityDto updateUserAuthority(Long userId, AuthUser authUser) {
         if(!authUser.getUserRole().equals(UserRole.ADMIN)) {
             throw new ApiException(ErrorStatus._NOT_PERMITTED_USER);
         }
@@ -54,6 +55,11 @@ public class UserService {
             throw new ApiException(ErrorStatus._DELETED_USER);
         }
         user.updateUserRole(UserRole.ADMIN);
+
+        // 변경된 내용을 저장
+        userRepository.save(user);
+
+        return new UpdateUserAuthorityDto(user.getUsername(),user.getNickname(),user.getUserRole().toString());
     }
 
 }

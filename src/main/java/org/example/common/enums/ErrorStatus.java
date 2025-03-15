@@ -35,7 +35,7 @@ public enum ErrorStatus {
     // 서버 예외
     _INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", "서버 내부 오류가 발생했습니다."),
     _NOT_FOUND_ROLE("NOT_FOUND_ROLE", "해당 권한이 없습니다"),
-    _NOT_PERMITTED_USER("NOT_PERMITTED_USER", "해당 작업은 권한을 가진 유저만 가능합니다"),
+    _NOT_PERMITTED_USER("ACCESS_DENIED", "관리자 권한이 필요한 요청입니다. 접근 권한이 없습니다."),
     _BAD_REQUEST("BAD_REQUEST", "잘못된 입력입니다.");
 
     private final String errorCode; // 영어로 된 에러 코드

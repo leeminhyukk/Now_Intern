@@ -3,7 +3,6 @@ package org.example.common.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.domain.user.dto.response.UserResponseDto;
 
 @Getter
 @AllArgsConstructor

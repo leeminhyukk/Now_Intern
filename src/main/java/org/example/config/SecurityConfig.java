@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // 세션 관련 내용 CSRF 공격 방지?
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안함
                 )
@@ -43,6 +43,12 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable) // LogoutFilter 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/signup").permitAll() // 회원가입, 로그인 허용
+                        .requestMatchers(
+                                "/swagger-ui/**", // Swagger UI 경로
+                                "/swagger-ui/", // Swagger UI 경로
+                                "/v3/api-docs/**", // OpenAPI 문서 경로
+                                "/api-docs/**" // OpenAPI 문서 경로
+                        ).permitAll() // Swagger와 API 문서 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 로그인 필요
                 )
                 .build();

@@ -1,5 +1,7 @@
 package org.example.domain.auth.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SignupResponse {
 
-    private String username;    // 사용자 이름
-    private String nickname;    // 사용자 닉네임
-    private String role;  // 사용자 권한 목록
+    @Schema(description = "사용자 이름", example = "JIN HO")
+    private String username;
+    @Schema(description = "별명", example = "JINHOKING")
+    private String nickname;
+    @Schema(description = "권한", example = "ADMIN")
+    private String role;
 }

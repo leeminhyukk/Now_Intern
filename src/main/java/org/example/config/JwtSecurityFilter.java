@@ -1,8 +1,5 @@
 package org.example.config;
 
-import org.example.common.enums.ErrorStatus;
-import org.example.common.exception.ApiException;
-import org.example.domain.user.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -14,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.common.enums.ErrorStatus;
+import org.example.domain.user.enums.UserRole;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -30,45 +29,49 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            // JWT 토큰 검증, 사용자 인증 확인
             HttpServletRequest httpRequest,
             @NonNull HttpServletResponse httpResponse,
             @NonNull FilterChain chain
     ) throws ServletException, IOException {
-        // Authorization 헤더 = 토큰을 담을 곳
         String authorizationHeader = httpRequest.getHeader("Authorization");
-        // 헤더 있는지 확인 동시에 토큰이 Bearer 로 시작하니까 그 부분 확인.
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String jwt = jwtUtil.substringToken(authorizationHeader);
             try {
-                // 토큰에서 추출
-                Claims claims = jwtUtil.extractClaims(jwt); // 토큰의 주체
+                Claims claims = jwtUtil.extractClaims(jwt);
                 Long userId = Long.valueOf(claims.getSubject());
                 String nickname = claims.get("nickname", String.class);
                 UserRole userRole = UserRole.of(claims.get("userRole", String.class));
 
-
-                // 인증
                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
                     AuthUser authUser = new AuthUser(userId, nickname, userRole);
-
                     JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
 
-                // 예외 처리
             } catch (SecurityException | MalformedJwtException e) {
-                throw new ApiException(ErrorStatus._UNAUTHORIZED_INVALID_TOKEN);
+                handleErrorResponse(httpResponse, ErrorStatus._UNAUTHORIZED_INVALID_TOKEN);
+                return;
             } catch (ExpiredJwtException e) {
-                throw new ApiException(ErrorStatus._UNAUTHORIZED_EXPIRED_TOKEN);
+                handleErrorResponse(httpResponse, ErrorStatus._UNAUTHORIZED_EXPIRED_TOKEN);
+                return;
             } catch (UnsupportedJwtException e) {
-                throw new ApiException(ErrorStatus._BAD_REQUEST_UNSUPPORTED_TOKEN);
+                handleErrorResponse(httpResponse, ErrorStatus._BAD_REQUEST_UNSUPPORTED_TOKEN);
+                return;
             } catch (Exception e) {
-                throw new ApiException(ErrorStatus._INTERNAL_SERVER_ERROR);
+                handleErrorResponse(httpResponse, ErrorStatus._INTERNAL_SERVER_ERROR);
+                return;
             }
         }
+
         chain.doFilter(httpRequest, httpResponse);
     }
 
+    private void handleErrorResponse(HttpServletResponse httpResponse, ErrorStatus errorStatus) throws IOException {
+        httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN); // 기본 상태코드 설정 (필요에 따라 변경)
+        httpResponse.setContentType("application/json; charset=UTF-8"); // UTF-8 인코딩 설정
+        httpResponse.getWriter().write("{\"error\": {\"code\": \"" + errorStatus.getErrorCode() + "\", \"message\": \"" + errorStatus.getMessage() + "\"}}");
+    }
 }
+

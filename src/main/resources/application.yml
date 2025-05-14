@@ -21,7 +21,7 @@ spring:
       on-profile: local
 
 jwt:
-  secret:key: ${JWT_SECRET_KEY}
+  secret-key: ${JWT_SECRET_KEY}
 
 logging:
   level:
